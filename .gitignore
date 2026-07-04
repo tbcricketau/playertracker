@@ -1,0 +1,30 @@
+# ── Python ─────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# ── Virtual environment ────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── Claude Code tooling (machine-specific) ─────────────
+.claude/
+
+# ── Secrets / env ──────────────────────────────────────
+.env
+*.env
+.streamlit/secrets.toml
+
+# ── Generated data ─────────────────────────────────────
+# Built by scripts/build_player_career.py; rebuildable and schema-specific.
+data/*.csv
+
+# ── OS / editor cruft ──────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/

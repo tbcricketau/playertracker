@@ -1,0 +1,4 @@
+pyodbc
+msal
+streamlit
+plotly
