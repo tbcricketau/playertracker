@@ -10,7 +10,6 @@ venv/
 env/
 
 # ── Claude Code tooling (machine-specific) ─────────────
-.claude/
 
 # ── Secrets / env ──────────────────────────────────────
 .env
@@ -28,3 +27,7 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+
+# Standard hygiene (added by the 2026-07 migration)
+*.pyc
+.claude/settings.local.json

@@ -22,13 +22,13 @@ py -3.12 -m venv .venv
 
 ## Data
 
-- **Live data** comes from the Azure SQL warehouse via `ludis_cricket.warehouse`
-  (non-interactive MSAL auth); schema is `ludis_cricket.config.DATA_SCHEMA`.
+- **Live data** comes from the Azure SQL warehouse via `cricket_core.warehouse`
+  (non-interactive MSAL auth); schema is `cricket_core.config.DATA_SCHEMA`.
 - `scripts/build_player_career.py` produces `data/aus_odi_player_career.csv`, which the app
   reads. That CSV is **gitignored** (rebuildable, and schema-specific — regenerate after a
   data drop / `DATA_SCHEMA` change). Run the build step before first launch.
 - Self-contained — no dependency on the referencebuilder reference files.
-- No pandas/numpy (parent Ludis rules); uses `list[dict]` + the `csv` module.
+- No pandas/numpy (parent house rules); uses `list[dict]` + the `csv` module.
 
 > Note: `match_length_id = '1'` can include domestic 50-over matches alongside
 > internationals — filter by the `series` column to isolate a specific competition.

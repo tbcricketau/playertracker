@@ -22,7 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import DATA_SCHEMA, AUS_TEAM_ID, ODI_MATCH_LENGTH_ID, ODI_CUTOFF_DATE
-from ludis_cricket.warehouse import set_conn_cursor, run_query
+from cricket_core.warehouse import set_conn_cursor, run_query
 
 OUTPUT_DEFAULT = Path(__file__).resolve().parent.parent / "data" / "aus_odi_player_career.csv"
 

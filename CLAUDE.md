@@ -13,17 +13,19 @@ Builds a CSV of Australian ODI player career progression from the Azure cricket 
 
 ## Database
 
-Same Azure SQL Server as `c:\Ludis\livematchdashboard`. Credentials via environment variables:
+Same Azure SQL Server as `c:\Projects\livematchdashboard`. Credentials via environment variables:
 - `app_id` — Azure AD app client ID
 - `app_secret` — Azure AD app client secret
 
-Connection setup is in `sql_functions.py` (MSAL token auth, identical copy from livematchdashboard).
+Connection comes from the shared package: `cricket_core.warehouse` (MSAL token auth + SSO
+fallback). Warehouse guide: `../cricket-core/DATAWAREHOUSE.md` — read before any query.
 
-- Schema: `GA20260618` (defined in `config.py`)
+- Schema: `cricket_core.config.DATA_SCHEMA` (re-exported via `config.py`)
 - Australia Men team ID: `"1004"`
 - `how_out` lookup: `lookup_type_id = 2806`
 - `over` is a reserved SQL Server keyword — always use `D.[over]` in queries
-- All values from `run_query_to_df` come back as Python strings; use `pd.to_numeric(..., errors="coerce")` for numeric columns
+- All values from `run_query_to_df` come back as Python strings; cast with `float(v)` /
+  `int(v)` in try/except (**no pandas** — house rule, see parent CLAUDE.md)
 - `bowler_dismissal` is a SQL BIT column → arrives as `"True"` or `"False"` (not 0/1); check with `str.lower().isin(["true", "1"])`
 - `legal_ball` is the authoritative column for whether a delivery counts in the over (more reliable than `wide_runs == 0`)
 
@@ -137,21 +139,25 @@ At career_match_num=10, ctd_bowl_avg is the bowling average across all 10 matche
 | `ctd_bowl_4w_count` | Number of 4-wicket hauls |
 | `ctd_bowl_5w_count` | Number of 5-wicket hauls |
 
-## Example analysis
+## Example analysis (stdlib — no pandas, house rule)
 
 ```python
-import pandas as pd
+import csv
 
-df = pd.read_csv("data/aus_odi_player_career.csv")
+with open("data/aus_odi_player_career.csv", newline="", encoding="utf-8") as f:
+    rows = list(csv.DictReader(f))
 
 # Compare Hazelwood vs Bartlett at the same career milestone
-match_10 = df[df["career_match_num"] == 10]
-comp = match_10[match_10["player_name"].isin(["Josh Hazelwood", "Xavier Bartlett"])]
-print(comp[["player_name", "ctd_bowl_wkts", "ctd_bowl_avg", "ctd_bowl_econ"]])
+comp = [r for r in rows if r["career_match_num"] == "10"
+        and r["player_name"] in ("Josh Hazelwood", "Xavier Bartlett")]
+for r in comp:
+    print(r["player_name"], r["ctd_bowl_wkts"], r["ctd_bowl_avg"], r["ctd_bowl_econ"])
 
-# Plot career bowling average progression for a player
-hazelwood = df[df["player_name"] == "Josh Hazelwood"].sort_values("career_match_num")
-hazelwood.plot(x="career_match_num", y="ctd_bowl_avg", title="Hazelwood career avg")
+# Career bowling-average progression for a player (plot with Plotly, lists directly)
+haze = sorted((r for r in rows if r["player_name"] == "Josh Hazelwood"),
+              key=lambda r: int(r["career_match_num"]))
+xs = [int(r["career_match_num"]) for r in haze]
+ys = [float(r["ctd_bowl_avg"]) for r in haze if r["ctd_bowl_avg"] not in ("", "None")]
 ```
 
 ## Known limitations
@@ -165,11 +171,11 @@ hazelwood.plot(x="career_match_num", y="ctd_bowl_avg", title="Hazelwood career a
 ```
 playertracker/
 ├── CLAUDE.md                          ← this file
-├── config.py                          ← DB schema, team ID, date cutoff
-├── sql_functions.py                   ← Azure MSAL auth + query runner
-├── requirements.txt
+├── config.py                          ← team ID, date cutoff (DATA_SCHEMA from cricket_core)
+├── requirements.txt                   ← starts with -e ../cricket-core
+├── setup.ps1                          ← one-command env build
 ├── data/
 │   └── aus_odi_player_career.csv      ← generated output (run the script)
 └── scripts/
-    └── build_player_career.py         ← main ETL script
+    └── build_player_career.py         ← main ETL script (warehouse via cricket_core)
 ```
