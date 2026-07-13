@@ -1,9 +1,13 @@
 import csv
+import os
 from pathlib import Path
 
 import streamlit as st
 
-DATA_PATH = Path(__file__).parent / "data" / "aus_odi_player_career.csv"
+# Default = the Australia-only warehouse build. Set PLAYERTRACKER_CSV to point at the
+# scorecarddb breadth build (data/odi_career_scorecard.csv) for any-nation careers.
+DATA_PATH = Path(os.environ.get(
+    "PLAYERTRACKER_CSV", str(Path(__file__).parent / "data" / "aus_odi_player_career.csv")))
 
 NUMERIC_COLS = {
     "career_match_num",
