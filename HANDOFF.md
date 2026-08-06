@@ -19,10 +19,13 @@ answer *is their speed changing, are they getting more knee flexion, what is the
 speed doing*. Then the same off match data, where ball speed, GPS and Hawkeye vision all
 line up.
 
-**The ODI career tool is not dead** — Tom wants it later. It needs a new home, because
-scorecard-level *analysis* should not live in scorecarddb (which is for *pulling*). See
-`FUTURE_PROJECTS.md` §"Scorecard-level analysis". **Do not delete `pages/` or
-`scripts/build_player_career.py` until that home exists** — move, don't destroy.
+**The ODI career tool is not dead, and it has now MOVED** ✅ (2026-08-06). Its home is the new
+sibling **[`../scorecardanalysis`](../scorecardanalysis/)**, per `FUTURE_PROJECTS.md`
+§"Scorecard-level analysis" — scorecard-level *analysis* belongs neither in `scorecarddb`
+(which pulls) nor here (which is becoming physical tracking). Moved, not destroyed: `app.py`,
+`data.py`, `pages/career_progression.py`, `pages/block_analysis.py`,
+`scripts/build_player_career.py`, `scripts/build_career_from_scorecard.py` — verified running in
+the new home before removal here. **This repo is now clear for the repurpose.**
 
 ## Audience: coach, S&C, and individual players
 
