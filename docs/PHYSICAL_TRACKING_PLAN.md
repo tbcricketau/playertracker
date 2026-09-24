@@ -129,8 +129,17 @@ players and sources would muddle a thing that currently does one job well. It sh
 
 ## Data model
 
-Three tables. SQLite to start — local, no infrastructure, and the cricket21 mirror is
-precedent for it on this estate.
+Three tables, **in `analytics` under a `playertracker` schema** — settled by Tom on 24-09-2026.
+
+The plan said "SQLite to start" because there was no database to start in. There is now:
+`ca-analytics-sql` / `analytics`, reached through `cricket_core.refdb`, where the service principal
+can create tables so scheduled and hosted jobs write unattended. Two things made the decision
+one-way: this store is **longitudinal and shared** — a per-player series is worth nothing on one
+laptop's gitignored `data/` — and the estate has just finished moving the other direction, with
+`scorecarddb` migrated and its four readers repointed (`cricket-core/docs/SQLITE_MIGRATION.md`).
+**Do not create a sqlite file here.** `scorecarddb/scorecarddb/store.py` is the shape to copy:
+the schema declared once as columns plus keys, rendered to the dialect, with every write funnelled
+through one module.
 
 ```
 observation      the reporting grain: one player, one date, one metric, one instrument

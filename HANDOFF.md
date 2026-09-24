@@ -146,9 +146,16 @@ The gap is a store and a report layer, **not a pipeline**:
 
 1. **What counts as one "session" in a match?** Per-spell is the honest analogue — a
    bowler's action at ball 5 is not the same as ball 50. Per-match blurs it.
-2. **Store: SQLite or straight to the DB Tom is getting access to?** SQLite is the
-   suggestion for now (cricket21's mirror is precedent), but if the DB is imminent it may
-   be worth waiting.
+2. ~~**Store: SQLite or straight to the DB Tom is getting access to?**~~ **Settled 24-09-2026
+   (Tom): straight into `analytics`, schema `playertracker`** — the database exists now
+   (`cricket_core.refdb`), and this store is longitudinal and shared, so a local file would be the
+   wrong shape from the first row. Nothing to migrate: no sqlite was ever created here. Copy
+   `scorecarddb/scorecarddb/store.py`'s shape. Detail in `docs/PHYSICAL_TRACKING_PLAN.md` §Data model.
+   **Worth reading before building the schema:** `[matchballspeed].[catapult]` in `analytics`
+   (3,120 rows, preserved the same day from a Ludis app) is already Catapult bowling load — peak
+   player load, run-up velocities, change in velocity — joined per delivery to warehouse match /
+   innings / over / ball. That is close to this project's `delivery` grain and may be a source
+   rather than a duplicate.
 3. **How far back does this reconstruct?** catapultgps has 141 matches; the warehouse
    goes to ~2001. Biomech only exists forward from now. A player's "history" will be very
    uneven by metric, and reports need to say so rather than draw a line through gaps.
